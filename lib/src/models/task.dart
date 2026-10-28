@@ -5,6 +5,7 @@ class Task {
   final String coursId;
   final DateTime echeance;
   final String? description; // facultative
+  final Duration? rappel; // délai avant l'échéance, null = aucun rappel
   final bool terminee;
 
   const Task({
@@ -13,6 +14,7 @@ class Task {
     required this.coursId,
     required this.echeance,
     this.description,
+    this.rappel,
     this.terminee = false,
   });
 
@@ -22,6 +24,7 @@ class Task {
     String? coursId,
     DateTime? echeance,
     String? description,
+    Duration? rappel,
     bool? terminee,
   }) =>
       Task(
@@ -30,6 +33,7 @@ class Task {
         coursId: coursId ?? this.coursId,
         echeance: echeance ?? this.echeance,
         description: description ?? this.description,
+        rappel: rappel ?? this.rappel,
         terminee: terminee ?? this.terminee,
       );
 
@@ -40,6 +44,7 @@ class Task {
     final coursId = json['coursId'];
     final echeance = json['echeance'];
     final description = json['description'];
+    final rappelMinutes = json['rappelMinutes'];
     final terminee = json['terminee'] ?? false;
 
     if (id is! String ||
@@ -47,6 +52,7 @@ class Task {
         coursId is! String ||
         echeance is! String ||
         (description != null && description is! String) ||
+        (rappelMinutes != null && rappelMinutes is! int) ||
         terminee is! bool) {
       throw FormatException('Task invalide', json);
     }
@@ -57,6 +63,9 @@ class Task {
       coursId: coursId,
       echeance: DateTime.parse(echeance), // FormatException si date invalide
       description: description as String?,
+      rappel: rappelMinutes == null
+          ? null
+          : Duration(minutes: rappelMinutes as int),
       terminee: terminee,
     );
   }
